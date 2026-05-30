@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Смета Электрика | Владимир</title>
+    <meta name="theme-color" content="#1e293b">
+    <style>
+        :root { --primary: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; --danger: #ef4444; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px 15px 120px; color: var(--text); }
+        
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { text-align: center; margin: 10px 0 25px; font-size: 1.4rem; color: var(--primary); }
+        
+        .card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .section-title { font-weight: 800; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        .row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        select, input { padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 16px; background: #fff; outline: none; transition: border 0.2s; }
+        select:focus, input:focus { border-color: var(--primary); }
+        select { flex: 2; min-width: 0; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px; }
+        input[type="number"] { flex: 1; min-width: 70px; text-align: center; }
+        
+        button.add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 16px; margin-top: 5px; }
+        button.remove-btn { background: #fee2e2; color: var(--danger); border: none; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; font-size: 20px; line-height: 1; flex-shrink: 0; }
+        
+        /* Sticky Footer Total */
+        .total-block { position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; color: white; padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); border-radius: 20px 20px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); z-index: 100; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.95rem; opacity: 0.9; }
+        .grand-total { font-size: 1.5rem; font-weight: 900; border-top: 1px solid #334155; padding-top: 12px; margin-top: 8px; display: flex; justify-content: space-between; letter-spacing: -0.5px; }
+        
+        .markup-input { background: #334155 !important; border: none !important; color: white !important; width: 50px !important; padding: 6px !important; border-radius: 6px !important; font-size: 14px !important; }
+        
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .btn-action { border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-print { background: white; color: var(--primary); }
+        .btn-clear { background: #334155; color: #94a3b8; }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; padding: 0; margin: 0; }
+            .add-btn, .remove-btn, .actions, .markup-input, h1 { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #e2e8f0; page-break-inside: avoid; padding: 15px; margin-bottom: 15px; }
+            .total-block { position: static; background: white; color: black; border: 2px solid #1e293b; border-radius: 12px; padding: 20px; margin-top: 20px; }
+            .total-row, .grand-total { color: black; opacity: 1; }
+            .grand-total { border-top-color: #1e293b; }
+            select, input { border: none; padding: 0; background: transparent; appearance: none; font-weight: 600; }
+            .row { margin-bottom: 8px; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 30px; border-bottom: 2px solid #1e293b; padding-bottom: 15px; }
+            .print-footer { display: block !important; margin-top: 30px; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+        }
+        .print-header, .print-footer { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="print-header">
+    <h2 style="margin:0;">СМЕТА НА ЭЛЕКТРОМОНТАЖНЫЕ РАБОТЫ</h2>
+    <p style="margin:5px 0 0; color:#64748b;">Дата: <span id="print-date"></span></p>
+</div>
+
+<div class="container">
+    <h1>⚡ Калькулятор электрика</h1>
+    
+    <!-- Работы -->
+    <div class="card">
+        <div class="section-title">🔧 Электромонтажные работы</div>
+        <div id="works-list"></div>
+        <button class="add-btn" onclick="app.addWork()">+ Добавить работу</button>
+    </div>
+
+    <!-- Материалы -->
+    <div class="card">
+        <div class="section-title">📦 Материалы</div>
+        <div id="materials-list"></div>
+        <button class="add-btn" onclick="app.addMaterial()">+ Добавить материал</button>
+    </div>
+</div>
+
+<!-- Sticky Итого -->
+<div class="total-block">
+    <div class="total-row"><span>Работы:</span> <span id="sum-works">0 ₽</span></div>
+    <div class="total-row"><span>Материалы:</span> <span id="sum-materials">0 ₽</span></div>
+    <div class="total-row">
+        <span>Наценка на материалы:</span> 
+        <input type="number" id="markup" class="markup-input" value="15" min="0" max="100" onchange="app.recalculate()"> %
+    </div>
+    <div class="grand-total">
+        <span>ИТОГО:</span> 
+        <span id="grand-total">0 ₽</span>
+    </div>
+    
+    <div class="actions">
+        <button class="btn-action btn-print" onclick="window.print()">🖨️ Сохранить / Печать</button>
+        <button class="btn-action btn-clear" onclick="app.clearAll()">🗑️ Очистить</button>
+    </div>
+</div>
+
+<div class="print-footer">
+    Исполнитель: Владимир | Инженер-электрик (КИПиА)<br>
+    Гарантия на выполненные работы: 12 месяцев<br>
+    Цены указаны с учетом наценки на материалы. Окончательная стоимость фиксируется в договоре.
+</div>
+
+<script>
+/**
+ * ПОЛНАЯ БАЗА ДАННЫХ (ТВЕРЬ 2026)
+ * Можно редактировать прямо здесь или вынести в JSON
+ */
+const DB = {
+    works: [
+        // Черновые
+        { n: "Штробление стен (бетон/кирпич)", u: "м.п.", p: 300, c: "Черновые" },
+        { n: "Штробление стен (газоблок/пеноблок)", u: "м.п.", p: 200, c: "Черновые" },
+        { n: "Штробление потолка", u: "м.п.", p: 400, c: "Черновые" },
+        { n: "Бурение сквозных отверстий (до 50мм)", u: "шт", p: 150, c: "Черновые" },
+        { n: "Укладка кабеля в гофре/трубе", u: "м.п.", p: 150, c: "Черновые" },
+        { n: "Укладка кабеля открытым способом (клипсы)", u: "м.п.", p: 100, c: "Черновые" },
+        { n: "Монтаж подрозетника (в бетоне)", u: "шт", p: 250, c: "Черновые" },
+        { n: "Монтаж подрозетника (в гипсокартоне)", u: "шт", p: 150, c: "Черновые" },
+        { n: "Монтаж распаечной коробки", u: "шт", p: 300, c: "Черновые" },
+        { n: "Демонтаж старой проводки", u: "м.п.", p: 80, c: "Черновые" },
+        // Чистовой
+        { n: "Установка розетки / выключателя", u: "шт", p: 300, c: "Чистовой" },
+        { n: "Установка TV/RJ45 розетки", u: "шт", p: 350, c: "Чистовой" },
+        { n: "Подключение люстры (простая)", u: "шт", p: 500, c: "Чистовой" },
+        { n: "Подключение люстры (сборная/сложная)", u: "шт", p: 1200, c: "Чистовой" },
+        { n: "Монтаж точечного светильника", u: "шт", p: 300, c: "Чистовой" },
+        { n: "Монтаж светодиодной ленты", u: "м.п.", p: 250, c: "Чистовой" },
+        { n: "Установка звонка / датчика движения", u: "шт", p: 400, c: "Чистовой" },
+        // Оборудование
+        { n: "Подключение варочной панели", u: "шт", p: 1000, c: "Оборудование" },
+        { n: "Подключение духового шкафа", u: "шт", p: 800, c: "Оборудование" },
+        { n: "Подключение стиральной/посудомоечной машины", u: "шт", p: 1200, c: "Оборудование" },
+        { n: "Подключение проточного водонагревателя", u: "шт", p: 1500, c: "Оборудование" },
+        { n: "Подключение электрокотла", u: "шт", p: 2500, c: "Оборудование" },
+        { n: "Подключение вытяжки / вентилятора", u: "шт", p: 600, c: "Оборудование" },
+        // Щиты и автоматика
+        { n: "Сборка щита «под ключ» (до 12 мод.)", u: "компл", p: 5000, c: "Щиты" },
+        { n: "Сборка щита «под ключ» (12-24 мод.)", u: "компл", p: 8000, c: "Щиты" },
+        { n: "Сборка щита «под ключ» (24+ мод.)", u: "компл", p: 12000, c: "Щиты" },
+        { n: "Установка автомата / УЗО / дифавтомата", u: "шт", p: 350, c: "Щиты" },
+        { n: "Установка реле напряжения / УЗИП", u: "шт", p: 500, c: "Щиты" },
+        { n: "Установка счетчика электроэнергии", u: "шт", p: 1500, c: "Щиты" },
+        { n: "Монтаж корпуса щита (навесной)", u: "шт", p: 800, c: "Щиты" },
+        { n: "Монтаж корпуса щита (встраиваемый)", u: "шт", p: 1500, c: "Щиты" },
+        // Прочее
+        { n: "Выезд на диагностику (без ремонта)", u: "выезд", p: 1000, c: "Прочее" },
+        { n: "Поиск скрытой проводки / обрыва", u: "час", p: 1500, c: "Прочее" },
+        { n: "Замер сопротивления изоляции", u: "линия", p: 200, c: "Прочее" },
+        { n: "Консультация + составление схемы", u: "час", p: 1000, c: "Прочее" }
+    ],
+    materials: [
+        // Кабель
+        { n: "Кабель ВВГнг(А)-LS 3x1.5", u: "м", p: 45, c: "Кабель" },
+        { n: "Кабель ВВГнг(А)-LS 3x2.5", u: "м", p: 65, c: "Кабель" },
+        { n: "Кабель ВВГнг(А)-LS 3x4", u: "м", p: 110, c: "Кабель" },
+        { n: "Кабель ВВГнг(А)-LS 3x6", u: "м", p: 160, c: "Кабель" },
+        { n: "Кабель ВВГнг(А)-LS 5x2.5", u: "м", p: 120, c: "Кабель" },
+        { n: "Гофра ПВХ d16 с протяжкой", u: "м", p: 18, c: "Кабель" },
+        { n: "Гофра ПВХ d20 с протяжкой", u: "м", p: 22, c: "Кабель" },
+        { n: "Труба ПНД d20 жесткая", u: "м", p: 35, c: "Кабель" },
+        { n: "Кабель-канал 16x16", u: "м", p: 25, c: "Кабель" },
+        { n: "Кабель-канал 25x16", u: "м", p: 35, c: "Кабель" },
+        // Автоматика
+        { n: "Автомат ABB/Schneider C10 1P", u: "шт", p: 350, c: "Автоматика" },
+        { n: "Автомат ABB/Schneider C16 1P", u: "шт", p: 380, c: "Автоматика" },
+        { n: "Автомат ABB/Schneider C25 1P", u: "шт", p: 400, c: "Автоматика" },
+        { n: "Автомат ABB/Schneider C32 3P", u: "шт", p: 1200, c: "Автоматика" },
+        { n: "УЗО ABB/Schneider 30mA 2P", u: "шт", p: 1800, c: "Автоматика" },
+        { n: "Дифавтомат ABB/Schneider C16 30mA", u: "шт", p: 2800, c: "Автоматика" },
+        { n: "Реле напряжения Zubr/RBuz 32A", u: "шт", p: 2200, c: "Автоматика" },
+        { n: "УЗИП класс C (тип 2)", u: "шт", p: 1500, c: "Автоматика" },
+        { n: "Контактор модульный 25A", u: "шт", p: 1800, c: "Автоматика" },
+        { n: "Импульсное реле (бистабильное)", u: "шт", p: 1200, c: "Автоматика" },
+        // Фурнитура
+        { n: "Подрозетник Schneider/Hegens углубл.", u: "шт", p: 80, c: "Фурнитура" },
+        { n: "Распредкоробка накладная IP44", u: "шт", p: 120, c: "Фурнитура" },
+        { n: "Распредкоробка встраиваемая d80", u: "шт", p: 90, c: "Фурнитура" },
+        { n: "Розетка Schneider Sedna (механизм)", u: "шт", p: 250, c: "Фурнитура" },
+        { n: "Выключатель Schneider Sedna (мех.)", u: "шт", p: 280, c: "Фурнитура" },
+        { n: "Рамка Schneider Sedna 1-постовая", u: "шт", p: 120, c: "Фурнитура" },
+        { n: "Клемма WAGO 2-проводная (221)", u: "шт", p: 25, c: "Фурнитура" },
+        { n: "Клемма WAGO 3-проводная (221)", u: "шт", p: 35, c: "Фурнитура" },
+        { n: "Наконечник НШВИ двойной", u: "упак", p: 150, c: "Фурнитура" },
+        { n: "Стяжка кабельная 3x100", u: "упак", p: 80, c: "Фурнитура" },
+        // Щиты
+        { n: "Щит навесной пластиковый 12 мод.", u: "шт", p: 800, c: "Щиты" },
+        { n: "Щит навесной металлический 24 мод.", u: "шт", p: 1800, c: "Щиты" },
+        { n: "Щит встраиваемый металлический 24 мод.", u: "шт", p: 2500, c: "Щиты" },
+        { n: "DIN-рейка 35мм (1м)", u: "шт", p: 120, c: "Щиты" },
+        { n: "Шина нулевая N на DIN-рейку", u: "шт", p: 150, c: "Щиты" },
+        { n: "Шина соединительная PIN 1P (1м)", u: "шт", p: 350, c: "Щиты" },
+        { n: "Маркировка для кабеля (набор)", u: "компл", p: 200, c: "Щиты" }
+    ]
+};
+
+class EstimatorApp {
+    constructor() {
+        this.state = {
+            works: [{ idx: 0, qty: 1 }],
+            materials: [{ idx: 0, qty: 1 }],
+            markup: 15
+        };
+        this.loadState();
+        this.init();
+    }
+
+    init() {
+        document.getElementById('print-date').textContent = new Date().toLocaleDateString('ru-RU');
+        document.getElementById('markup').value = this.state.markup;
+        this.renderWorks();
+        this.renderMaterials();
+        this.recalculate();
+    }
+
+    // === State Management ===
+    saveState() {
+        try { localStorage.setItem('elec_est_v1', JSON.stringify(this.state)); } catch(e) {}
+    }
+
+    loadState() {
+        try {
+            const saved = localStorage.getItem('elec_est_v1');
+            if (saved) this.state = JSON.parse(saved);
+        } catch(e) {}
+    }
+
+    // === Helpers ===
+    getOptions(data, selectedIdx) {
+        const groups = {};
+        data.forEach((item, idx) => {
+            if (!groups[item.c]) groups[item.c] = [];
+            groups[item.c].push({ idx, ...item });
+        });
+        let html = '';
+        for (const [cat, items] of Object.entries(groups)) {
+            html += `<optgroup label="${cat}">`;
+            items.forEach(item => {
+                html += `<option value="${item.idx}" ${item.idx == selectedIdx ? 'selected' : ''}>${item.n} (${item.p}₽/${item.u})</option>`;
+            });
+            html += '</optgroup>';
+        }
+        return html;
+    }
+
+    formatMoney(num) {
+        return Math.round(num).toLocaleString('ru-RU') + ' ₽';
+    }
+
+    // === Works ===
+    addWork() {
+        this.state.works.push({ idx: 0, qty: 1 });
+        this.saveState();
+        this.renderWorks();
+        this.recalculate();
+    }
+
+    removeWork(i) {
+        if (this.state.works.length <= 1) return;
+        this.state.works.splice(i, 1);
+        this.saveState();
+        this.renderWorks();
+        this.recalculate();
+    }
+
+    updateWork(i, val) {
+        this.state.works[i].idx = parseInt(val);
+        this.saveState();
+        this.recalculate();
+    }
+
+    updateWorkQty(i, val) {
+        this.state.works[i].qty = parseFloat(val) || 0;
+        this.saveState();
+        this.recalculate();
+    }
+
+    renderWorks() {
+        const container = document.getElementById('works-list');
+        container.innerHTML = '';
+        this.state.works.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'row';
+            div.innerHTML = `
+                <select onchange="app.updateWork(${i}, this.value)">
+                    ${this.getOptions(DB.works, item.idx)}
+                </select>
+                <input type="number" min="0.1" step="0.1" value="${item.qty}" 
+                       onchange="app.updateWorkQty(${i}, this.value)" placeholder="Кол-во">
+                <button class="remove-btn" onclick="app.removeWork(${i})">×</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // === Materials ===
+    addMaterial() {
+        this.state.materials.push({ idx: 0, qty: 1 });
+        this.saveState();
+        this.renderMaterials();
+        this.recalculate();
+    }
+
+    removeMaterial(i) {
+        if (this.state.materials.length <= 1) return;
+        this.state.materials.splice(i, 1);
+        this.saveState();
+        this.renderMaterials();
+        this.recalculate();
+    }
+
+    updateMat(i, val) {
+        this.state.materials[i].idx = parseInt(val);
+        this.saveState();
+        this.recalculate();
+    }
+
+    updateMatQty(i, val) {
+        this.state.materials[i].qty = parseFloat(val) || 0;
+        this.saveState();
+        this.recalculate();
+    }
+
+    renderMaterials() {
+        const container = document.getElementById('materials-list');
+        container.innerHTML = '';
+        this.state.materials.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'row';
+            div.innerHTML = `
+                <select onchange="app.updateMat(${i}, this.value)">
+                    ${this.getOptions(DB.materials, item.idx)}
+                </select>
+                <input type="number" min="0.1" step="0.1" value="${item.qty}" 
+                       onchange="app.updateMatQty(${i}, this.value)" placeholder="Кол-во">
+                <button class="remove-btn" onclick="app.removeMaterial(${i})">×</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // === Calculation ===
+    recalculate() {
+        let sumW = 0;
+        this.state.works.forEach(item => {
+            const w = DB.works[item.idx];
+            if (w) sumW += w.p * item.qty;
+        });
+        
+        let sumM = 0;
+        this.state.materials.forEach(item => {
+            const m = DB.materials[item.idx];
+            if (m) sumM += m.p * item.qty;
+        });
+        
+        const markup = parseFloat(document.getElementById('markup').value) || 0;
+        this.state.markup = markup;
+        const total = sumW + sumM * (1 + markup / 100);
+        
+        document.getElementById('sum-works').textContent = this.formatMoney(sumW);
+        document.getElementById('sum-materials').textContent = this.formatMoney(sumM);
+        document.getElementById('grand-total').textContent = this.formatMoney(total);
+        
+        this.saveState();
+    }
+
+    clearAll() {
+        if (!confirm('Очистить всю смету? Данные будут удалены безвозвратно.')) return;
+        this.state = {
+            works: [{ idx: 0, qty: 1 }],
+            materials: [{ idx: 0, qty: 1 }],
+            markup: 15
+        };
+        document.getElementById('markup').value = 15;
+        this.saveState();
+        this.renderWorks();
+        this.renderMaterials();
+        this.recalculate();
+    }
+}
+
+// Инициализация приложения
+const app = new EstimatorApp();
+</script>
+</body>
+</html>
