@@ -1,390 +1,110 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Смета Электрика | Владимир</title>
-    <meta name="theme-color" content="#1e293b">
-    <style>
-        :root { --primary: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; --danger: #ef4444; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px 15px 120px; color: var(--text); }
-        
-        .container { max-width: 800px; margin: 0 auto; }
-        h1 { text-align: center; margin: 10px 0 25px; font-size: 1.4rem; color: var(--primary); }
-        
-        .card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-        .section-title { font-weight: 800; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-        
-        .row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        select, input { padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 16px; background: #fff; outline: none; transition: border 0.2s; }
-        select:focus, input:focus { border-color: var(--primary); }
-        select { flex: 2; min-width: 0; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px; }
-        input[type="number"] { flex: 1; min-width: 70px; text-align: center; }
-        
-        button.add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 16px; margin-top: 5px; }
-        button.remove-btn { background: #fee2e2; color: var(--danger); border: none; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; font-size: 20px; line-height: 1; flex-shrink: 0; }
-        
-        /* Sticky Footer Total */
-        .total-block { position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; color: white; padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); border-radius: 20px 20px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); z-index: 100; }
-        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.95rem; opacity: 0.9; }
-        .grand-total { font-size: 1.5rem; font-weight: 900; border-top: 1px solid #334155; padding-top: 12px; margin-top: 8px; display: flex; justify-content: space-between; letter-spacing: -0.5px; }
-        
-        .markup-input { background: #334155 !important; border: none !important; color: white !important; width: 50px !important; padding: 6px !important; border-radius: 6px !important; font-size: 14px !important; }
-        
-        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-        .btn-action { border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-print { background: white; color: var(--primary); }
-        .btn-clear { background: #334155; color: #94a3b8; }
-
-        /* Print Styles */
-        @media print {
-            body { background: white; padding: 0; margin: 0; }
-            .add-btn, .remove-btn, .actions, .markup-input, h1 { display: none !important; }
-            .card { box-shadow: none; border: 1px solid #e2e8f0; page-break-inside: avoid; padding: 15px; margin-bottom: 15px; }
-            .total-block { position: static; background: white; color: black; border: 2px solid #1e293b; border-radius: 12px; padding: 20px; margin-top: 20px; }
-            .total-row, .grand-total { color: black; opacity: 1; }
-            .grand-total { border-top-color: #1e293b; }
-            select, input { border: none; padding: 0; background: transparent; appearance: none; font-weight: 600; }
-            .row { margin-bottom: 8px; }
-            .print-header { display: block !important; text-align: center; margin-bottom: 30px; border-bottom: 2px solid #1e293b; padding-bottom: 15px; }
-            .print-footer { display: block !important; margin-top: 30px; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 15px; }
-        }
-        .print-header, .print-footer { display: none; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор работ мастера | Владимир</title>
+  <meta name="description" content="Калькулятор стоимости бытовых работ: электрика, окна, сборка мебели, диагностика, кабель, щит и срочный выезд." />
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    :root{--bg:#0f172a;--card:rgba(255,255,255,.08);--border:rgba(255,255,255,.14);--text:#f8fafc;--muted:#cbd5e1;--muted2:#94a3b8;--accent:#f59e0b;--accent2:#d97706;--good:#22c55e;--shadow:0 24px 70px rgba(0,0,0,.28)}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top left,rgba(245,158,11,.2),transparent 34%),linear-gradient(135deg,#020617 0%,#0f172a 52%,#111827 100%);color:var(--text);min-height:100vh}button,input,select{font:inherit}.page{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:34px 0 48px}.card,.hero{background:var(--card);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}.hero{padding:clamp(26px,5vw,46px);margin-bottom:22px;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:220px;height:220px;right:-80px;top:-80px;background:rgba(245,158,11,.15);border-radius:50%}.eyebrow{margin:0 0 10px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;font-weight:850}.small{font-size:.7rem;margin-bottom:4px}h1{max-width:880px;margin:10px 0;font-size:clamp(2.15rem,5vw,4.7rem);line-height:.98;letter-spacing:-.055em}h2{margin:0;font-size:clamp(1.35rem,3vw,2rem);letter-spacing:-.025em}.subtitle{max-width:840px;color:var(--muted);font-size:1.08rem;line-height:1.6}.badges,.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.badges span,.chip,.ghost{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--muted);border-radius:999px;padding:9px 14px;font-weight:750}.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);gap:22px;align-items:start}.services,.options,.result,.notes{padding:22px}.head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}.actions-top{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}button{border:0;cursor:pointer}.ghost:hover,.chip:hover,.chip.active{border-color:rgba(245,158,11,.7);color:var(--text);background:rgba(245,158,11,.16)}.list{display:grid;gap:12px;margin-top:18px}.service{display:grid;grid-template-columns:1fr 140px 90px;gap:14px;align-items:center;padding:16px;border:1px solid rgba(255,255,255,.12);background:rgba(15,23,42,.42);border-radius:18px}.service.active{border-color:rgba(245,158,11,.55);background:rgba(245,158,11,.08)}.s-name{display:flex;gap:12px;align-items:flex-start}.icon{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:rgba(255,255,255,.1);flex:0 0 auto;font-size:1.2rem}.title{font-weight:850}.meta{display:block;margin-top:3px;color:var(--muted2);font-size:.9rem;line-height:1.4}.price{color:var(--accent);font-weight:850;text-align:right}.qty{display:flex;align-items:center;gap:7px;justify-content:flex-end}.qty button{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.12);color:var(--text);font-weight:900}.qty input{width:54px;text-align:center;padding:10px 4px}.side{display:grid;gap:22px;position:sticky;top:16px}.options{display:grid;gap:14px}label{display:grid;gap:8px;color:var(--muted);font-weight:650}input,select{width:100%;padding:13px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(15,23,42,.72);color:var(--text);outline:none}input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(245,158,11,.16)}.result p{margin:0 0 10px;color:var(--muted)}.result strong{display:block;font-size:clamp(2.15rem,6vw,4.1rem);line-height:1;color:var(--accent);margin-bottom:14px;letter-spacing:-.06em}.result span{display:block;color:var(--muted);line-height:1.55;margin-bottom:20px}.main-btn{width:100%;border-radius:16px;padding:15px 18px;background:var(--accent);color:#111827;font-weight:900;font-size:1rem}.main-btn:hover{background:var(--accent2)}.main-btn.copied{background:var(--good)}.notes{margin-top:22px;color:var(--muted);line-height:1.65}.notes h2{color:var(--text);margin-bottom:12px}.strong{color:var(--text);font-weight:800}.editor{position:fixed;inset:0;z-index:100;display:none;padding:18px;place-items:center;background:rgba(2,6,23,.72);backdrop-filter:blur(10px)}.editor.open{display:grid}.editor-box{width:min(920px,100%);max-height:86vh;overflow:auto;padding:22px}.editor-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:16px}.editor-list{display:grid;gap:10px}.editor-row{display:grid;grid-template-columns:1fr 160px;gap:12px;align-items:center;padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(15,23,42,.42)}.editor-name{font-weight:850}.base,.status{color:var(--muted);line-height:1.45}.editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.editor-actions button,.close{border-radius:14px;padding:12px 14px;font-weight:900;background:var(--accent);color:#111827}.editor-actions .secondary,.close{background:rgba(255,255,255,.1);color:var(--text);border:1px solid rgba(255,255,255,.16)}@media(max-width:940px){.layout{grid-template-columns:1fr}.side{position:static}}@media(max-width:680px){.page{width:min(100% - 20px,1180px);padding-top:18px}.head,.service,.editor-head,.editor-row{grid-template-columns:1fr;display:grid}.service{gap:12px}.price,.qty{justify-content:flex-start;text-align:left}.badges span,.chip,.ghost{padding:8px 11px;font-size:.9rem}}
+  </style>
 </head>
 <body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">Мастер на час · быстрый расчёт</p>
+      <h1>Калькулятор стоимости бытовых работ</h1>
+      <p class="subtitle">Считай электрику, окна и сборку мебели: розетки, выключатели, светильники, автоматы, УЗО, диагностику, кабель, регулировку окон, москитные сетки, сборку шкафов, кроватей, кухонных модулей и срочный выезд.</p>
+      <div class="badges"><span>Для Авито</span><span>Для клиента</span><span>Для быстрого КП</span></div>
+    </section>
 
-<div class="print-header">
-    <h2 style="margin:0;">СМЕТА НА ЭЛЕКТРОМОНТАЖНЫЕ РАБОТЫ</h2>
-    <p style="margin:5px 0 0; color:#64748b;">Дата: <span id="print-date"></span></p>
-</div>
+    <section class="layout">
+      <section class="card services">
+        <div class="head">
+          <div><p class="eyebrow small">Шаг 1</p><h2>Выбери работы</h2></div>
+          <div class="actions-top"><button class="ghost" id="resetBtn" type="button">Сбросить</button><button class="ghost" id="editBtn" type="button">Редактировать прайс</button></div>
+        </div>
+        <div class="toolbar" id="toolbar"></div>
+        <div id="servicesList" class="list"></div>
+      </section>
 
-<div class="container">
-    <h1>⚡ Калькулятор электрика</h1>
-    
-    <!-- Работы -->
-    <div class="card">
-        <div class="section-title">🔧 Электромонтажные работы</div>
-        <div id="works-list"></div>
-        <button class="add-btn" onclick="app.addWork()">+ Добавить работу</button>
-    </div>
+      <aside class="side">
+        <section class="card options">
+          <p class="eyebrow small">Шаг 2</p><h2>Настройки</h2>
+          <label>Выезд мастера, ₽<input type="number" id="visitPrice" min="0" value="1000"></label>
+          <label>Минимальный заказ, ₽<input type="number" id="minimumPrice" min="0" value="2000"></label>
+          <label>Материалы сверху, ₽<input type="number" id="materialsExtra" min="0" value="0"></label>
+          <label>Сложность объекта<select id="complexity"><option value="1">Обычная</option><option value="1.15">Неудобный доступ / старый фонд +15%</option><option value="1.25">Сложный демонтаж / плохое состояние +25%</option><option value="1.4">Сложный объект +40%</option></select></label>
+          <label>Срочность<select id="urgency"><option value="1">Обычный выезд</option><option value="1.25">Сегодня +25%</option><option value="1.5">Вечер / срочно +50%</option><option value="1.8">Аварийный вызов +80%</option></select></label>
+          <label>Скидка, %<input type="number" id="discount" min="0" max="50" value="0"></label>
+        </section>
+        <section class="card result"><p>Итого ориентировочно</p><strong id="total">0 ₽</strong><span id="details">Выбери работы для расчёта.</span><button id="copyBtn" class="main-btn" type="button">Скопировать расчёт</button></section>
+      </aside>
+    </section>
 
-    <!-- Материалы -->
-    <div class="card">
-        <div class="section-title">📦 Материалы</div>
-        <div id="materials-list"></div>
-        <button class="add-btn" onclick="app.addMaterial()">+ Добавить материал</button>
-    </div>
-</div>
+    <section class="notes card">
+      <h2>Текст для клиента</h2>
+      <p>Расчёт предварительный. Точная цена согласовывается до начала работ после осмотра: состояние проводки, оконной фурнитуры, стен, мебели, крепежа, доступ к месту работ, необходимость расходников и сложность демонтажа могут изменить итоговую сумму.</p>
+      <p class="strong">Ничего не делается без согласования — сначала осмотр и цена, потом работа.</p>
+    </section>
+  </main>
 
-<!-- Sticky Итого -->
-<div class="total-block">
-    <div class="total-row"><span>Работы:</span> <span id="sum-works">0 ₽</span></div>
-    <div class="total-row"><span>Материалы:</span> <span id="sum-materials">0 ₽</span></div>
-    <div class="total-row">
-        <span>Наценка на материалы:</span> 
-        <input type="number" id="markup" class="markup-input" value="15" min="0" max="100" onchange="app.recalculate()"> %
-    </div>
-    <div class="grand-total">
-        <span>ИТОГО:</span> 
-        <span id="grand-total">0 ₽</span>
-    </div>
-    
-    <div class="actions">
-        <button class="btn-action btn-print" onclick="window.print()">🖨️ Сохранить / Печать</button>
-        <button class="btn-action btn-clear" onclick="app.clearAll()">🗑️ Очистить</button>
-    </div>
-</div>
+  <div class="editor" id="editor">
+    <section class="editor-box card">
+      <div class="editor-head"><div><p class="eyebrow small">Настройка</p><h2>Редактор прайса</h2><p class="base">Измени цены услуг. Они сохранятся в этом браузере и будут использоваться в расчёте.</p></div><button class="close" id="closeEditor" type="button">Закрыть</button></div>
+      <div class="editor-list" id="editorList"></div>
+      <div class="editor-actions"><button id="savePrices" type="button">Сохранить цены</button><button class="secondary" id="resetPrices" type="button">Вернуть базовые</button></div>
+      <p class="status" id="editorStatus"></p>
+    </section>
+  </div>
 
-<div class="print-footer">
-    Исполнитель: Владимир | Инженер-электрик (КИПиА)<br>
-    Гарантия на выполненные работы: 12 месяцев<br>
-    Цены указаны с учетом наценки на материалы. Окончательная стоимость фиксируется в договоре.
-</div>
-
-<script>
-/**
- * ПОЛНАЯ БАЗА ДАННЫХ (ТВЕРЬ 2026)
- * Можно редактировать прямо здесь или вынести в JSON
- */
-const DB = {
-    works: [
-        // Черновые
-        { n: "Штробление стен (бетон/кирпич)", u: "м.п.", p: 300, c: "Черновые" },
-        { n: "Штробление стен (газоблок/пеноблок)", u: "м.п.", p: 200, c: "Черновые" },
-        { n: "Штробление потолка", u: "м.п.", p: 400, c: "Черновые" },
-        { n: "Бурение сквозных отверстий (до 50мм)", u: "шт", p: 150, c: "Черновые" },
-        { n: "Укладка кабеля в гофре/трубе", u: "м.п.", p: 150, c: "Черновые" },
-        { n: "Укладка кабеля открытым способом (клипсы)", u: "м.п.", p: 100, c: "Черновые" },
-        { n: "Монтаж подрозетника (в бетоне)", u: "шт", p: 250, c: "Черновые" },
-        { n: "Монтаж подрозетника (в гипсокартоне)", u: "шт", p: 150, c: "Черновые" },
-        { n: "Монтаж распаечной коробки", u: "шт", p: 300, c: "Черновые" },
-        { n: "Демонтаж старой проводки", u: "м.п.", p: 80, c: "Черновые" },
-        // Чистовой
-        { n: "Установка розетки / выключателя", u: "шт", p: 300, c: "Чистовой" },
-        { n: "Установка TV/RJ45 розетки", u: "шт", p: 350, c: "Чистовой" },
-        { n: "Подключение люстры (простая)", u: "шт", p: 500, c: "Чистовой" },
-        { n: "Подключение люстры (сборная/сложная)", u: "шт", p: 1200, c: "Чистовой" },
-        { n: "Монтаж точечного светильника", u: "шт", p: 300, c: "Чистовой" },
-        { n: "Монтаж светодиодной ленты", u: "м.п.", p: 250, c: "Чистовой" },
-        { n: "Установка звонка / датчика движения", u: "шт", p: 400, c: "Чистовой" },
-        // Оборудование
-        { n: "Подключение варочной панели", u: "шт", p: 1000, c: "Оборудование" },
-        { n: "Подключение духового шкафа", u: "шт", p: 800, c: "Оборудование" },
-        { n: "Подключение стиральной/посудомоечной машины", u: "шт", p: 1200, c: "Оборудование" },
-        { n: "Подключение проточного водонагревателя", u: "шт", p: 1500, c: "Оборудование" },
-        { n: "Подключение электрокотла", u: "шт", p: 2500, c: "Оборудование" },
-        { n: "Подключение вытяжки / вентилятора", u: "шт", p: 600, c: "Оборудование" },
-        // Щиты и автоматика
-        { n: "Сборка щита «под ключ» (до 12 мод.)", u: "компл", p: 5000, c: "Щиты" },
-        { n: "Сборка щита «под ключ» (12-24 мод.)", u: "компл", p: 8000, c: "Щиты" },
-        { n: "Сборка щита «под ключ» (24+ мод.)", u: "компл", p: 12000, c: "Щиты" },
-        { n: "Установка автомата / УЗО / дифавтомата", u: "шт", p: 350, c: "Щиты" },
-        { n: "Установка реле напряжения / УЗИП", u: "шт", p: 500, c: "Щиты" },
-        { n: "Установка счетчика электроэнергии", u: "шт", p: 1500, c: "Щиты" },
-        { n: "Монтаж корпуса щита (навесной)", u: "шт", p: 800, c: "Щиты" },
-        { n: "Монтаж корпуса щита (встраиваемый)", u: "шт", p: 1500, c: "Щиты" },
-        // Прочее
-        { n: "Выезд на диагностику (без ремонта)", u: "выезд", p: 1000, c: "Прочее" },
-        { n: "Поиск скрытой проводки / обрыва", u: "час", p: 1500, c: "Прочее" },
-        { n: "Замер сопротивления изоляции", u: "линия", p: 200, c: "Прочее" },
-        { n: "Консультация + составление схемы", u: "час", p: 1000, c: "Прочее" }
-    ],
-    materials: [
-        // Кабель
-        { n: "Кабель ВВГнг(А)-LS 3x1.5", u: "м", p: 45, c: "Кабель" },
-        { n: "Кабель ВВГнг(А)-LS 3x2.5", u: "м", p: 65, c: "Кабель" },
-        { n: "Кабель ВВГнг(А)-LS 3x4", u: "м", p: 110, c: "Кабель" },
-        { n: "Кабель ВВГнг(А)-LS 3x6", u: "м", p: 160, c: "Кабель" },
-        { n: "Кабель ВВГнг(А)-LS 5x2.5", u: "м", p: 120, c: "Кабель" },
-        { n: "Гофра ПВХ d16 с протяжкой", u: "м", p: 18, c: "Кабель" },
-        { n: "Гофра ПВХ d20 с протяжкой", u: "м", p: 22, c: "Кабель" },
-        { n: "Труба ПНД d20 жесткая", u: "м", p: 35, c: "Кабель" },
-        { n: "Кабель-канал 16x16", u: "м", p: 25, c: "Кабель" },
-        { n: "Кабель-канал 25x16", u: "м", p: 35, c: "Кабель" },
-        // Автоматика
-        { n: "Автомат ABB/Schneider C10 1P", u: "шт", p: 350, c: "Автоматика" },
-        { n: "Автомат ABB/Schneider C16 1P", u: "шт", p: 380, c: "Автоматика" },
-        { n: "Автомат ABB/Schneider C25 1P", u: "шт", p: 400, c: "Автоматика" },
-        { n: "Автомат ABB/Schneider C32 3P", u: "шт", p: 1200, c: "Автоматика" },
-        { n: "УЗО ABB/Schneider 30mA 2P", u: "шт", p: 1800, c: "Автоматика" },
-        { n: "Дифавтомат ABB/Schneider C16 30mA", u: "шт", p: 2800, c: "Автоматика" },
-        { n: "Реле напряжения Zubr/RBuz 32A", u: "шт", p: 2200, c: "Автоматика" },
-        { n: "УЗИП класс C (тип 2)", u: "шт", p: 1500, c: "Автоматика" },
-        { n: "Контактор модульный 25A", u: "шт", p: 1800, c: "Автоматика" },
-        { n: "Импульсное реле (бистабильное)", u: "шт", p: 1200, c: "Автоматика" },
-        // Фурнитура
-        { n: "Подрозетник Schneider/Hegens углубл.", u: "шт", p: 80, c: "Фурнитура" },
-        { n: "Распредкоробка накладная IP44", u: "шт", p: 120, c: "Фурнитура" },
-        { n: "Распредкоробка встраиваемая d80", u: "шт", p: 90, c: "Фурнитура" },
-        { n: "Розетка Schneider Sedna (механизм)", u: "шт", p: 250, c: "Фурнитура" },
-        { n: "Выключатель Schneider Sedna (мех.)", u: "шт", p: 280, c: "Фурнитура" },
-        { n: "Рамка Schneider Sedna 1-постовая", u: "шт", p: 120, c: "Фурнитура" },
-        { n: "Клемма WAGO 2-проводная (221)", u: "шт", p: 25, c: "Фурнитура" },
-        { n: "Клемма WAGO 3-проводная (221)", u: "шт", p: 35, c: "Фурнитура" },
-        { n: "Наконечник НШВИ двойной", u: "упак", p: 150, c: "Фурнитура" },
-        { n: "Стяжка кабельная 3x100", u: "упак", p: 80, c: "Фурнитура" },
-        // Щиты
-        { n: "Щит навесной пластиковый 12 мод.", u: "шт", p: 800, c: "Щиты" },
-        { n: "Щит навесной металлический 24 мод.", u: "шт", p: 1800, c: "Щиты" },
-        { n: "Щит встраиваемый металлический 24 мод.", u: "шт", p: 2500, c: "Щиты" },
-        { n: "DIN-рейка 35мм (1м)", u: "шт", p: 120, c: "Щиты" },
-        { n: "Шина нулевая N на DIN-рейку", u: "шт", p: 150, c: "Щиты" },
-        { n: "Шина соединительная PIN 1P (1м)", u: "шт", p: 350, c: "Щиты" },
-        { n: "Маркировка для кабеля (набор)", u: "компл", p: 200, c: "Щиты" }
-    ]
-};
-
-class EstimatorApp {
-    constructor() {
-        this.state = {
-            works: [{ idx: 0, qty: 1 }],
-            materials: [{ idx: 0, qty: 1 }],
-            markup: 15
-        };
-        this.loadState();
-        this.init();
-    }
-
-    init() {
-        document.getElementById('print-date').textContent = new Date().toLocaleDateString('ru-RU');
-        document.getElementById('markup').value = this.state.markup;
-        this.renderWorks();
-        this.renderMaterials();
-        this.recalculate();
-    }
-
-    // === State Management ===
-    saveState() {
-        try { localStorage.setItem('elec_est_v1', JSON.stringify(this.state)); } catch(e) {}
-    }
-
-    loadState() {
-        try {
-            const saved = localStorage.getItem('elec_est_v1');
-            if (saved) this.state = JSON.parse(saved);
-        } catch(e) {}
-    }
-
-    // === Helpers ===
-    getOptions(data, selectedIdx) {
-        const groups = {};
-        data.forEach((item, idx) => {
-            if (!groups[item.c]) groups[item.c] = [];
-            groups[item.c].push({ idx, ...item });
-        });
-        let html = '';
-        for (const [cat, items] of Object.entries(groups)) {
-            html += `<optgroup label="${cat}">`;
-            items.forEach(item => {
-                html += `<option value="${item.idx}" ${item.idx == selectedIdx ? 'selected' : ''}>${item.n} (${item.p}₽/${item.u})</option>`;
-            });
-            html += '</optgroup>';
-        }
-        return html;
-    }
-
-    formatMoney(num) {
-        return Math.round(num).toLocaleString('ru-RU') + ' ₽';
-    }
-
-    // === Works ===
-    addWork() {
-        this.state.works.push({ idx: 0, qty: 1 });
-        this.saveState();
-        this.renderWorks();
-        this.recalculate();
-    }
-
-    removeWork(i) {
-        if (this.state.works.length <= 1) return;
-        this.state.works.splice(i, 1);
-        this.saveState();
-        this.renderWorks();
-        this.recalculate();
-    }
-
-    updateWork(i, val) {
-        this.state.works[i].idx = parseInt(val);
-        this.saveState();
-        this.recalculate();
-    }
-
-    updateWorkQty(i, val) {
-        this.state.works[i].qty = parseFloat(val) || 0;
-        this.saveState();
-        this.recalculate();
-    }
-
-    renderWorks() {
-        const container = document.getElementById('works-list');
-        container.innerHTML = '';
-        this.state.works.forEach((item, i) => {
-            const div = document.createElement('div');
-            div.className = 'row';
-            div.innerHTML = `
-                <select onchange="app.updateWork(${i}, this.value)">
-                    ${this.getOptions(DB.works, item.idx)}
-                </select>
-                <input type="number" min="0.1" step="0.1" value="${item.qty}" 
-                       onchange="app.updateWorkQty(${i}, this.value)" placeholder="Кол-во">
-                <button class="remove-btn" onclick="app.removeWork(${i})">×</button>
-            `;
-            container.appendChild(div);
-        });
-    }
-
-    // === Materials ===
-    addMaterial() {
-        this.state.materials.push({ idx: 0, qty: 1 });
-        this.saveState();
-        this.renderMaterials();
-        this.recalculate();
-    }
-
-    removeMaterial(i) {
-        if (this.state.materials.length <= 1) return;
-        this.state.materials.splice(i, 1);
-        this.saveState();
-        this.renderMaterials();
-        this.recalculate();
-    }
-
-    updateMat(i, val) {
-        this.state.materials[i].idx = parseInt(val);
-        this.saveState();
-        this.recalculate();
-    }
-
-    updateMatQty(i, val) {
-        this.state.materials[i].qty = parseFloat(val) || 0;
-        this.saveState();
-        this.recalculate();
-    }
-
-    renderMaterials() {
-        const container = document.getElementById('materials-list');
-        container.innerHTML = '';
-        this.state.materials.forEach((item, i) => {
-            const div = document.createElement('div');
-            div.className = 'row';
-            div.innerHTML = `
-                <select onchange="app.updateMat(${i}, this.value)">
-                    ${this.getOptions(DB.materials, item.idx)}
-                </select>
-                <input type="number" min="0.1" step="0.1" value="${item.qty}" 
-                       onchange="app.updateMatQty(${i}, this.value)" placeholder="Кол-во">
-                <button class="remove-btn" onclick="app.removeMaterial(${i})">×</button>
-            `;
-            container.appendChild(div);
-        });
-    }
-
-    // === Calculation ===
-    recalculate() {
-        let sumW = 0;
-        this.state.works.forEach(item => {
-            const w = DB.works[item.idx];
-            if (w) sumW += w.p * item.qty;
-        });
-        
-        let sumM = 0;
-        this.state.materials.forEach(item => {
-            const m = DB.materials[item.idx];
-            if (m) sumM += m.p * item.qty;
-        });
-        
-        const markup = parseFloat(document.getElementById('markup').value) || 0;
-        this.state.markup = markup;
-        const total = sumW + sumM * (1 + markup / 100);
-        
-        document.getElementById('sum-works').textContent = this.formatMoney(sumW);
-        document.getElementById('sum-materials').textContent = this.formatMoney(sumM);
-        document.getElementById('grand-total').textContent = this.formatMoney(total);
-        
-        this.saveState();
-    }
-
-    clearAll() {
-        if (!confirm('Очистить всю смету? Данные будут удалены безвозвратно.')) return;
-        this.state = {
-            works: [{ idx: 0, qty: 1 }],
-            materials: [{ idx: 0, qty: 1 }],
-            markup: 15
-        };
-        document.getElementById('markup').value = 15;
-        this.saveState();
-        this.renderWorks();
-        this.renderMaterials();
-        this.recalculate();
-    }
-}
-
-// Инициализация приложения
-const app = new EstimatorApp();
-</script>
+  <script>
+    const categories=[['all','Все'],['points','Точки'],['light','Свет'],['panel','Щит'],['cable','Кабель'],['diagnostic','Диагностика'],['windows','Окна'],['furniture','Мебель']];
+    const services=[
+      {id:'socket',category:'points',icon:'🔌',title:'Замена розетки',unit:'точка',price:1200,description:'Демонтаж старой, установка новой, проверка контактов'},
+      {id:'switch',category:'points',icon:'🔘',title:'Замена выключателя',unit:'точка',price:1000,description:'Обычный, проходной или клавишный выключатель'},
+      {id:'socketBox',category:'points',icon:'🧱',title:'Замена подрозетника',unit:'шт.',price:600,description:'Укрепление точки, монтаж нового подрозетника'},
+      {id:'lamp',category:'light',icon:'💡',title:'Установка светильника',unit:'шт.',price:900,description:'Накладной светильник, бра, простой потолочный свет'},
+      {id:'chandelier',category:'light',icon:'✨',title:'Монтаж люстры',unit:'шт.',price:1800,description:'Сборка, подвес, подключение, проверка режимов'},
+      {id:'ledStrip',category:'light',icon:'〰️',title:'Монтаж LED-ленты',unit:'м',price:500,description:'Проклейка, подключение блока питания, проверка'},
+      {id:'breaker',category:'panel',icon:'⚡',title:'Замена автомата',unit:'шт.',price:900,description:'Установка автомата в щите без цены самого автомата'},
+      {id:'rcd',category:'panel',icon:'🛡️',title:'Установка УЗО / дифавтомата',unit:'шт.',price:1600,description:'Подключение, проверка тестовой кнопки, маркировка'},
+      {id:'panelRevision',category:'panel',icon:'🧰',title:'Ревизия щита',unit:'работа',price:2500,description:'Подтяжка контактов, осмотр, базовая маркировка'},
+      {id:'cableOpen',category:'cable',icon:'➰',title:'Прокладка кабеля открыто',unit:'м',price:180,description:'Без штробления, по поверхности или в кабель-канале'},
+      {id:'cableChannel',category:'cable',icon:'📏',title:'Монтаж кабель-канала',unit:'м',price:250,description:'Разметка, крепёж, укладка кабеля'},
+      {id:'stroba',category:'cable',icon:'🪨',title:'Штробление',unit:'м',price:700,description:'Ориентир для бетона/кирпича, без заделки'},
+      {id:'junctionBox',category:'cable',icon:'📦',title:'Расключение коробки',unit:'шт.',price:1200,description:'Соединение линий, клеммы/опрессовка по ситуации'},
+      {id:'lineDiagnostic',category:'diagnostic',icon:'🔎',title:'Диагностика линии',unit:'линия',price:1000,description:'Поиск причины: нет питания, выбивает автомат, греется точка'},
+      {id:'smallRepair',category:'diagnostic',icon:'🪛',title:'Мелкий ремонт контакта',unit:'точка',price:800,description:'Зачистка, подтяжка, восстановление соединения'},
+      {id:'windowAdjust',category:'windows',icon:'🪟',title:'Регулировка окна',unit:'створка',price:900,description:'Настройка прижима, устранение задевания, лёгкая регулировка фурнитуры'},
+      {id:'windowHandle',category:'windows',icon:'🚪',title:'Замена оконной ручки',unit:'шт.',price:600,description:'Демонтаж старой ручки и установка новой без стоимости ручки'},
+      {id:'windowSeal',category:'windows',icon:'〽️',title:'Замена уплотнителя',unit:'м',price:250,description:'Снятие старого уплотнителя, монтаж нового по периметру'},
+      {id:'windowFoam',category:'windows',icon:'🧴',title:'Пропенивание / герметизация',unit:'м',price:350,description:'Локальная герметизация щелей и продуваний без отделки откосов'},
+      {id:'mosquitoNet',category:'windows',icon:'🕸️',title:'Установка москитной сетки',unit:'шт.',price:700,description:'Монтаж готовой сетки на крепления без изготовления сетки'},
+      {id:'furnitureSimple',category:'furniture',icon:'🪑',title:'Сборка простой мебели',unit:'шт.',price:1200,description:'Стул, тумба, небольшой стол, простая полка'},
+      {id:'furnitureBed',category:'furniture',icon:'🛏️',title:'Сборка кровати',unit:'шт.',price:2500,description:'Каркас, ламели, подъёмный механизм считается сложностью'},
+      {id:'furnitureWardrobe',category:'furniture',icon:'🚪',title:'Сборка шкафа',unit:'секция',price:2200,description:'Корпусный шкаф, пенал, шкаф-купе по секциям'},
+      {id:'furnitureKitchen',category:'furniture',icon:'🍽️',title:'Сборка кухонного модуля',unit:'модуль',price:1800,description:'Нижний или верхний модуль без сложной врезки техники'},
+      {id:'furnitureWallMount',category:'furniture',icon:'🧱',title:'Навеска полки / шкафа',unit:'шт.',price:1000,description:'Разметка, крепёж, навеска на стену без цены крепежа'},
+      {id:'furnitureDisassemble',category:'furniture',icon:'🔩',title:'Разборка мебели',unit:'шт.',price:900,description:'Аккуратная разборка для ремонта, перевозки или утилизации'}
+    ];
+    const storageKey='master_service_prices_v3';services.forEach(s=>s.basePrice=s.price);
+    const $=id=>document.getElementById(id);const fmt=n=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(n);const num=(el,f=0)=>{const n=Number(el.value);return Number.isFinite(n)&&n>=0?n:f};let filter='all';
+    function loadPrices(){try{const saved=JSON.parse(localStorage.getItem(storageKey))||{};services.forEach(s=>{const p=Number(saved[s.id]);s.price=Number.isFinite(p)&&p>0?p:s.basePrice})}catch{services.forEach(s=>s.price=s.basePrice)}}
+    function savePrices(){const out={};document.querySelectorAll('[data-edit-price]').forEach(input=>{const s=services.find(x=>x.id===input.dataset.editPrice);if(!s)return;const p=num(input,s.basePrice);s.price=p>0?p:s.basePrice;if(s.price!==s.basePrice)out[s.id]=s.price});localStorage.setItem(storageKey,JSON.stringify(out));renderServices();applyFilter(filter);calculate();$('editorStatus').textContent='Прайс сохранён. Расчёт обновлён.'}
+    function resetPrices(){localStorage.removeItem(storageKey);services.forEach(s=>s.price=s.basePrice);renderEditor();renderServices();applyFilter(filter);calculate();$('editorStatus').textContent='Базовый прайс восстановлен.'}
+    function renderToolbar(){ $('toolbar').innerHTML=categories.map(([id,name])=>`<button type="button" class="chip ${id==='all'?'active':''}" data-filter="${id}">${name}</button>`).join('');document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>applyFilter(b.dataset.filter)); }
+    function renderServices(){ $('servicesList').innerHTML=services.map(s=>`<article class="service" data-category="${s.category}" data-id="${s.id}"><div class="s-name"><span class="icon">${s.icon}</span><div><div class="title">${s.title}</div><span class="meta">${s.description}</span></div></div><div class="price">${fmt(s.price)} / ${s.unit}</div><div class="qty"><button type="button" data-minus="${s.id}">−</button><input type="number" min="0" value="${document.querySelector(`[data-qty='${s.id}']`)?.value||0}" data-qty="${s.id}"><button type="button" data-plus="${s.id}">+</button></div></article>`).join('');document.querySelectorAll('[data-qty]').forEach(i=>i.oninput=calculate);document.querySelectorAll('[data-plus]').forEach(b=>b.onclick=()=>{const i=document.querySelector(`[data-qty='${b.dataset.plus}']`);i.value=num(i)+1;calculate()});document.querySelectorAll('[data-minus]').forEach(b=>b.onclick=()=>{const i=document.querySelector(`[data-qty='${b.dataset.minus}']`);i.value=Math.max(0,num(i)-1);calculate()}); }
+    function applyFilter(f){filter=f;document.querySelectorAll('.service').forEach(row=>row.hidden=!(f==='all'||row.dataset.category===f));document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));}
+    function selected(){return services.map(s=>{const qty=num(document.querySelector(`[data-qty='${s.id}']`)||{value:0});return{...s,qty,subtotal:qty*s.price}}).filter(s=>s.qty>0)}
+    function calculate(){const sel=selected();const work=sel.reduce((a,s)=>a+s.subtotal,0);const visit=num($('visitPrice'));const min=num($('minimumPrice'));const mat=num($('materialsExtra'));const complexity=Number($('complexity').value);const urgency=Number($('urgency').value);const disc=Math.min(50,num($('discount')));const base=work+visit+mat;const coeff=Math.round(base*complexity*urgency);const discountValue=Math.round(coeff*(disc/100));const after=coeff-discountValue;const total=sel.length?Math.max(after,min):0;document.querySelectorAll('.service').forEach(row=>row.classList.toggle('active',num(row.querySelector('[data-qty]'))>0));$('total').textContent=fmt(total);if(!sel.length){$('details').textContent='Выбери работы для расчёта.';return{sel,total,details:[]}}const details=[...sel.map(s=>`${s.title}: ${s.qty} ${s.unit} × ${fmt(s.price)} = ${fmt(s.subtotal)}`),`Работы: ${fmt(work)}`,`Выезд: ${fmt(visit)}`,mat?`Материалы сверху: ${fmt(mat)}`:'Материалы сверху: не указаны',complexity>1?`Сложность: x${complexity}`:'Сложность: обычная',urgency>1?`Срочность: x${urgency}`:'Срочность: обычная',disc?`Скидка: ${disc}% −${fmt(discountValue)}`:'Скидка: нет',total===min&&after<min?`Применён минимальный заказ: ${fmt(min)}`:`Минимальный заказ: ${fmt(min)}`];$('details').innerHTML=details.join('<br>');return{sel,total,details}}
+    function copyResult(){const r=calculate();if(!r.sel.length){$('copyBtn').textContent='Сначала выбери работы';setTimeout(()=>$('copyBtn').textContent='Скопировать расчёт',1600);return}navigator.clipboard.writeText(['Предварительный расчёт бытовых работ','',...r.details,'',`Итого ориентировочно: ${fmt(r.total)}`,'','Точная цена согласовывается после осмотра. Ничего не делается без согласования.'].join('\n')).then(()=>{$('copyBtn').textContent='Расчёт скопирован';$('copyBtn').classList.add('copied');setTimeout(()=>{$('copyBtn').textContent='Скопировать расчёт';$('copyBtn').classList.remove('copied')},1800)})}
+    function resetCalc(){document.querySelectorAll('[data-qty]').forEach(i=>i.value=0);$('visitPrice').value=1000;$('minimumPrice').value=2000;$('materialsExtra').value=0;$('complexity').value=1;$('urgency').value=1;$('discount').value=0;applyFilter('all');calculate()}
+    function renderEditor(){ $('editorList').innerHTML=services.map(s=>`<label class="editor-row"><span><span class="editor-name">${s.icon} ${s.title}</span><br><span class="base">База: ${fmt(s.basePrice)} / ${s.unit}</span></span><input type="number" min="0" value="${s.price}" data-edit-price="${s.id}"></label>`).join(''); }
+    document.querySelectorAll('#visitPrice,#minimumPrice,#materialsExtra,#complexity,#urgency,#discount').forEach(el=>{el.oninput=calculate;el.onchange=calculate});$('copyBtn').onclick=copyResult;$('resetBtn').onclick=resetCalc;$('editBtn').onclick=()=>{renderEditor();$('editorStatus').textContent='';$('editor').classList.add('open')};$('closeEditor').onclick=()=>$('editor').classList.remove('open');$('editor').onclick=e=>{if(e.target===$('editor'))$('editor').classList.remove('open')};$('savePrices').onclick=savePrices;$('resetPrices').onclick=resetPrices;document.addEventListener('keydown',e=>{if(e.key==='Escape')$('editor').classList.remove('open')});
+    loadPrices();renderToolbar();renderServices();calculate();
+  </script>
 </body>
 </html>
